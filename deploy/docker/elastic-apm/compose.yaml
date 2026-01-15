@@ -1,0 +1,129 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.4
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=elastic-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.license.self_generated.type=basic
+      - ELASTIC_PASSWORD=AxaUcAn4mLfLKRABJbH-
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-logs:/usr/share/elasticsearch/logs
+      - elasticsearch-config:/usr/share/elasticsearch/config
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - elastic
+    healthcheck:
+      test: ["CMD-SHELL", "curl -u elastic:AxaUcAn4mLfLKRABJbH- http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+        reservations:
+          memory: 512MB
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.2.4
+    container_name: kibana
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=AxaUcAn4mLfLKRABJbH-
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=min32characterslongencryptionkey123
+      - XPACK_REPORTING_ENCRYPTIONKEY=min32characterslongencryptionkey456
+      - XPACK_SECURITY_ENCRYPTIONKEY=min32characterslongencryptionkey789
+    volumes:
+      - kibana-data:/usr/share/kibana/data
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    ports:
+      - "5601:5601"
+    networks:
+      - elastic
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+        reservations:
+          memory: 512MB
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:9.2.4
+    container_name: apm-server
+    user: root
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_PASSWORD=AxaUcAn4mLfLKRABJbH-
+      - KIBANA_HOST=kibana:5601
+    volumes:
+      - ./apm-server.yml:/usr/share/apm-server/apm-server.yml:ro
+      - apm-data:/usr/share/apm-server/data
+    ports:
+      - "8200:8200"
+    networks:
+      - elastic
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8200/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512MB
+        reservations:
+          memory: 256MB
+
+networks:
+  elastic:
+    driver: bridge
+    name: elastic
+
+volumes:
+  elasticsearch-data:
+    driver: local
+  elasticsearch-logs:
+    driver: local
+  elasticsearch-config:
+    driver: local
+  kibana-data:
+    driver: local
+  apm-data:
+    driver: local
+
+
