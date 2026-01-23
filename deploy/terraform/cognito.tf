@@ -1,36 +1,46 @@
-# resource "aws_cognito_user_pool" "this" {
-#   name = "${var.project_name}-users"
-#
-#   mfa_configuration        = "OFF"
-#   auto_verified_attributes = []
-#
-#   admin_create_user_config {
-#     allow_admin_create_user_only = true
-#   }
-#
-#   schema {
-#     name                = "email"
-#     attribute_data_type = "String"
-#     required            = true
-#     mutable             = true
-#     string_attribute_constraints {
-#       min_length = 1
-#       max_length = 256
-#     }
-#   }
-#
-#   password_policy {
-#     require_lowercase = true
-#     minimum_length    = 8
-#     require_numbers   = true
-#     require_symbols   = true
-#     require_uppercase = true
-#   }
-#
-# }
-#
-# resource "aws_cognito_user_pool_client" "user_pool_client" {
-#   name                = "${local.project_name}-pool-client"
-#   user_pool_id        = aws_cognito_user_pool.user_pool.id
-#   explicit_auth_flows = ["ALLOW_ADMIN_USER_PASSWORD_AUTH"]
-# }
+resource "aws_cognito_user_pool" "this" {
+  name = "${var.project_name}-user-pool"
+
+  username_configuration {
+    case_sensitive = false
+  }
+
+  mfa_configuration        = "OFF"
+  auto_verified_attributes = []
+
+  alias_attributes         = ["email", "preferred_username"]
+
+  schema {
+    attribute_data_type      = "String"
+    name                     = "email"
+    required                 = true
+    mutable                  = true
+    developer_only_attribute = false
+  }
+
+  password_policy {
+    minimum_length    = 8
+    require_lowercase = true
+    require_numbers   = true
+    require_symbols   = false
+    require_uppercase = true
+  }
+}
+
+resource "aws_cognito_user_pool_client" "this" {
+  name         = "${var.project_name}-auth-client"
+  user_pool_id = aws_cognito_user_pool.this.id
+
+  explicit_auth_flows = [
+    "USER_PASSWORD_AUTH",
+    "ADMIN_NO_SRP_AUTH",
+  ]
+}
+
+output "cognito_user_pool_id" {
+  value = aws_cognito_user_pool.this.id
+}
+
+output "cognito_client_id" {
+  value = aws_cognito_user_pool_client.this.id
+}

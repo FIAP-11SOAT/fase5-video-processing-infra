@@ -23,5 +23,5 @@ variable "aws_region" {
 variable "project_name" {
   description = "The name of the project"
   type        = string
-  default     = "fase5-infra-hacka"
+  default     = "fase5-video-processing-infra"
 }

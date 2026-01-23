@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "fase5-terraform-state"
-    key    = "fase5-infra-hacka/terraform.tfstate"
+    key    = "fase5-video-processing-infra/terraform.tfstate"
     region = "us-east-1"
   }
 
@@ -10,8 +10,9 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.0"
     }
-    random = {
-      source  = "hashicorp/random"
+
+    docker = {
+      source  = "kreuzwerker/docker"
       version = "~> 3.0"
     }
   }
