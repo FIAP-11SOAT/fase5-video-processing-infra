@@ -8,7 +8,7 @@ resource "aws_cognito_user_pool" "this" {
   mfa_configuration        = "OFF"
   auto_verified_attributes = []
 
-  alias_attributes         = ["email", "preferred_username"]
+  alias_attributes = ["email", "preferred_username"]
 
   schema {
     attribute_data_type      = "String"

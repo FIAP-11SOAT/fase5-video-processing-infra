@@ -1,3 +1,7 @@
+data "aws_acm_certificate" "api_cert" {
+  domain = "*.frameify.dev"
+}
+
 data "http" "cognito_jwks" {
   url = "https://${aws_cognito_user_pool.this.endpoint}/.well-known/jwks.json"
 
@@ -9,3 +13,4 @@ data "http" "cognito_jwks" {
     aws_cognito_user_pool.this
   ]
 }
+
