@@ -1,3 +1,4 @@
+
 resource "aws_apigatewayv2_api" "gtw" {
   name          = "${var.project_name}-api-gateway"
   protocol_type = "HTTP"
@@ -12,14 +13,24 @@ resource "aws_apigatewayv2_api" "gtw" {
   }
 }
 
-resource "aws_apigatewayv2_domain_name" "api_domain" {
+resource "aws_apigatewayv2_domain_name" "gtw_custom_domain" {
   domain_name = "gtw.frameify.dev"
 
   domain_name_configuration {
-    certificate_arn = data.aws_acm_certificate.api_cert.arn
+    certificate_arn = data.aws_acm_certificate.domain_cert.arn
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
+}
+
+resource "cloudflare_dns_record" "cloudflare_gtw_domain" {
+  zone_id = local.clean_image_repo_url["CLOUDFLARE_ZONE_ID"]
+  comment = "Subdomain for API Gateway"
+  name    = "gtw"
+  type    = "CNAME"
+  content = aws_apigatewayv2_domain_name.gtw_custom_domain.domain_name
+  ttl     = 1
+  proxied = false
 }
 
 resource "aws_apigatewayv2_stage" "default" {
@@ -30,7 +41,7 @@ resource "aws_apigatewayv2_stage" "default" {
 
 resource "aws_apigatewayv2_api_mapping" "api_mapping" {
   api_id      = aws_apigatewayv2_api.gtw.id
-  domain_name = aws_apigatewayv2_domain_name.api_domain.domain_name
+  domain_name = aws_apigatewayv2_domain_name.gtw_custom_domain.domain_name
   stage       = aws_apigatewayv2_stage.default.name
 }
 
@@ -39,5 +50,5 @@ output "api_endpoint" {
 }
 
 output "api_domain_name" {
-  value = aws_apigatewayv2_domain_name.api_domain.domain_name
+  value = aws_apigatewayv2_domain_name.gtw_custom_domain.domain_name
 }

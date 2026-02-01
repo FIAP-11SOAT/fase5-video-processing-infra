@@ -1,4 +1,4 @@
-data "aws_acm_certificate" "api_cert" {
+data "aws_acm_certificate" "domain_cert" {
   domain = "*.frameify.dev"
 }
 

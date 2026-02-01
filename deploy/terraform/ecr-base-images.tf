@@ -1,4 +1,4 @@
-data "aws_ecr_authorization_token" "ecr_auth" {}
+
 
 locals {
   clean_image_repo_url = replace(data.aws_ecr_authorization_token.ecr_auth.proxy_endpoint, "https://", "")

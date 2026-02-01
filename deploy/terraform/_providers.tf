@@ -17,3 +17,7 @@ provider "docker" {
     password = data.aws_ecr_authorization_token.ecr_auth.password
   }
 }
+
+provider "cloudflare" {
+  api_token = local.aws_master_secrets["CLOUDFLARE_API_TOKEN"]
+}

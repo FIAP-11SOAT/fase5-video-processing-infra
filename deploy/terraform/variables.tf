@@ -1,6 +1,7 @@
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
+data "aws_ecr_authorization_token" "ecr_auth" {}
 
 data "aws_secretsmanager_secret" "master_secrets" {
   name = "terraform-master-credentials"
@@ -12,6 +13,10 @@ data "aws_secretsmanager_secret_version" "master_secrets" {
 
 locals {
   aws_master_secrets = jsondecode(data.aws_secretsmanager_secret_version.master_secrets.secret_string)
+}
+
+locals {
+  domain_name = "frameify.dev"
 }
 
 variable "aws_region" {
