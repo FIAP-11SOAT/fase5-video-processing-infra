@@ -15,15 +15,6 @@ resource "aws_lb" "alb_public" {
   }
 }
 
-resource "cloudflare_dns_record" "alb_public_a" {
-  zone_id = local.aws_master_secrets["CLOUDFLARE_ZONE_ID"]
-  name    = "@"
-  type    = "CNAME"
-  ttl     = 1
-  content = aws_lb.alb_public.dns_name
-  proxied = false
-}
-
 resource "aws_security_group" "alb_public_sg" {
   name        = "${var.project_name}-alb-public-sg"
   description = "Security Group for public ALB"
@@ -65,4 +56,13 @@ resource "aws_lb_listener" "https" {
       status_code  = "200"
     }
   }
+}
+
+resource "cloudflare_dns_record" "alb_public_a" {
+  zone_id = local.aws_master_secrets["CLOUDFLARE_ZONE_ID"]
+  name    = "@"
+  type    = "CNAME"
+  ttl     = 1
+  content = aws_lb.alb_public.dns_name
+  proxied = false
 }

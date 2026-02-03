@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool" "this" {
-  name = "${var.project_name}-user-pool"
+  name = "fase5-cognito-user-pool"
 
   username_configuration {
     case_sensitive = false
@@ -8,7 +8,7 @@ resource "aws_cognito_user_pool" "this" {
   mfa_configuration        = "OFF"
   auto_verified_attributes = []
 
-  alias_attributes = ["email", "preferred_username"]
+  alias_attributes = ["email"]
 
   schema {
     attribute_data_type      = "String"

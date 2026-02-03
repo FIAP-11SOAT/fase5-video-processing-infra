@@ -8,7 +8,6 @@ resource "aws_secretsmanager_secret" "secrets" {
   }
 }
 
-
 resource "aws_secretsmanager_secret_version" "secrets" {
   secret_id = aws_secretsmanager_secret.secrets.id
   secret_string = jsonencode({
