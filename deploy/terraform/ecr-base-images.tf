@@ -8,6 +8,28 @@ resource "aws_ecr_repository" "lambda_image" {
   name = "default-lambda-image"
 }
 
+data "aws_iam_policy_document" "ecr_allow_lambda" {
+  statement {
+    sid    = "AllowLambdaPull"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+
+    actions = [
+      "ecr:BatchGetImage",
+      "ecr:GetDownloadUrlForLayer"
+    ]
+  }
+}
+
+resource "aws_ecr_repository_policy" "allow_lambda" {
+  repository = aws_ecr_repository.lambda_image.name
+  policy     = data.aws_iam_policy_document.ecr_allow_lambda.json
+}
+
 resource "null_resource" "pull_tag_push_image" {
 
   provisioner "local-exec" {
