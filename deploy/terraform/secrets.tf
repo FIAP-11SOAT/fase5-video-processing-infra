@@ -11,6 +11,7 @@ resource "aws_secretsmanager_secret" "secrets" {
 resource "aws_secretsmanager_secret_version" "secrets" {
   secret_id = aws_secretsmanager_secret.secrets.id
   secret_string = jsonencode({
+    EKS_CLUSTER_NAME            = aws_eks_cluster.eks_cluster.name
     VPC_ID                      = module.vpc.vpc_id
     GTW_ID                      = aws_apigatewayv2_api.gtw.id
     GTW_ENDPOINT                = aws_apigatewayv2_stage.default.invoke_url

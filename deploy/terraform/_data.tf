@@ -10,3 +10,11 @@ data "http" "cognito_jwks" {
   ]
 }
 
+data "aws_eks_cluster_auth" "auth" {
+  name = aws_eks_cluster.eks_cluster.name
+}
+
+data "tls_certificate" "cluster_oidc" {
+  url = aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer
+}
+
