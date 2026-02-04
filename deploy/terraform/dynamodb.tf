@@ -2,7 +2,7 @@ resource "aws_dynamodb_table" "video_processing" {
   name         = "fase5-video-processing"
   billing_mode = "PAY_PER_REQUEST"
 
-  hash_key = "videoKey"
+  hash_key  = "videoKey"
   range_key = "userId"
 
   attribute {
