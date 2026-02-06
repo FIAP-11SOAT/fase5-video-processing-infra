@@ -21,3 +21,17 @@ provider "docker" {
 provider "cloudflare" {
   api_token = local.aws_master_secrets["CLOUDFLARE_API_TOKEN"]
 }
+
+provider "helm" {
+  kubernetes = {
+    host                   = aws_eks_cluster.eks_cluster.endpoint
+    cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
+    token                  = data.aws_eks_cluster_auth.auth.token
+  }
+}
+
+provider "kubernetes" {
+  host                   = aws_eks_cluster.eks_cluster.endpoint
+  cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.auth.token
+}

@@ -1,69 +1,71 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: httpbin
-  namespace: fase5-infra-hacka
-  labels:
-    app: httpbin
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: httpbin
-  template:
-    metadata:
-      labels:
-        app: httpbin
-    spec:
-      containers:
-      - name: httpbin
-        image: kennethreitz/httpbin:latest
-        ports:
-        - containerPort: 80
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "500m"
-            memory: "256Mi"
-        livenessProbe:
-          httpGet:
-            path: /status/200
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 10
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: httpbin-service
-  namespace: fase5-infra-hacka
-spec:
-  selector:
-    app: httpbin
-  type: ClusterIP
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-
----
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: httpbin
+#  namespace: fase5-video-processing-front
+#  labels:
+#    app: httpbin
+#spec:
+#  replicas: 2
+#  selector:
+#    matchLabels:
+#      app: httpbin
+#  template:
+#    metadata:
+#      labels:
+#        app: httpbin
+#    spec:
+#      containers:
+#      - name: httpbin
+#        image: kennethreitz/httpbin:latest
+#        ports:
+#        - containerPort: 80
+#        resources:
+#          requests:
+#            cpu: "100m"
+#            memory: "128Mi"
+#          limits:
+#            cpu: "500m"
+#            memory: "256Mi"
+#        livenessProbe:
+#          httpGet:
+#            path: /status/200
+#            port: 80
+#          initialDelaySeconds: 15
+#          periodSeconds: 10
+#
+#---
+#
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: httpbin-service
+#  namespace: fase5-video-processing-front
+#spec:
+#  selector:
+#    app: httpbin
+#  type: ClusterIP
+#  ports:
+#    - protocol: TCP
+#      port: 80
+#      targetPort: 80
+#
+#---
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  namespace: fase5-infra-hacka
   name: httpbin-ingress
+  namespace: fase5-video-processing-front
   labels:
     app: httpbin
   annotations:
-    alb.ingress.kubernetes.io/group.name: k8s-shared-internal-alb-use1
-    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/group.name: k8s-application-public-alb-use1
+    alb.ingress.kubernetes.io/load-balancer-attributes: deletion_protection.enabled=false
+    alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:814147156565:certificate/eacb65d6-ee44-45e4-af9a-c19aa8b08a99
 spec:
   ingressClassName: alb
   rules:

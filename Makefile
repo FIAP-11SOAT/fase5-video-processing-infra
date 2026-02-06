@@ -1,5 +1,5 @@
 eks-update:
-	aws eks update-kubeconfig --name fase3-infra-totem-de-pedidos-eks-cluster
+	aws eks update-kubeconfig --name fase5-video-processing-infra-eks-cluster
 
 tf-apply:
 	cd deploy/terraform && terraform apply -auto-approve

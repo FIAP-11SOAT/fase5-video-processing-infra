@@ -28,6 +28,7 @@ resource "cloudflare_dns_record" "acm_validation" {
 
 # AWS ACM Certificate for Subdomain <domain_name> with DNS Validation via Cloudflare
 resource "aws_acm_certificate" "front" {
+
   domain_name       = local.domain_name
   validation_method = "DNS"
 

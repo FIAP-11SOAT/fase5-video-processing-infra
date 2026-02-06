@@ -5,11 +5,13 @@ resource "aws_lb" "eks_internal" {
   security_groups    = [aws_security_group.alb_internal_sg.id]
   subnets            = module.vpc.private_subnets
 
+  enable_deletion_protection = false
+
   tags = {
     Name = "${var.project_name}-alb-internal"
     "ingress.k8s.aws/resource" : "LoadBalancer"
-    "ingress.k8s.aws/stack" : "k8s-shared-internal-alb-use1"
-    # "elbv2.k8s.aws/cluster" : aws_eks_cluster.eks_cluster.name
+    "ingress.k8s.aws/stack" : "k8s-application-internal-alb-use1"
+    "elbv2.k8s.aws/cluster" : aws_eks_cluster.eks_cluster.name
   }
 }
 

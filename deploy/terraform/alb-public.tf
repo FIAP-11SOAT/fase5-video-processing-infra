@@ -5,13 +5,13 @@ resource "aws_lb" "alb_public" {
   security_groups    = [aws_security_group.alb_public_sg.id]
   subnets            = module.vpc.public_subnets
 
-  # enable_deletion_protection = true
+  enable_deletion_protection = false
 
   tags = {
     Name = "${var.project_name}-alb-public"
     "ingress.k8s.aws/resource" : "LoadBalancer"
-    "ingress.k8s.aws/stack" : "k8s-shared-internal-alb-use1"
-    # "elbv2.k8s.aws/cluster" : aws_eks_cluster.eks_cluster.name
+    "ingress.k8s.aws/stack" : "k8s-application-public-alb-use1"
+    "elbv2.k8s.aws/cluster" : aws_eks_cluster.eks_cluster.name
   }
 }
 
