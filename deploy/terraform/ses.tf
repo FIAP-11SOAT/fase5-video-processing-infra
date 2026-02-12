@@ -60,7 +60,3 @@ resource "cloudflare_dns_record" "mail_from_spf" {
   content = "v=spf1 include:amazonses.com ~all"
   ttl     = 3600
 }
-
-resource "aws_ses_email_identity" "emails_teste" {
-  email = "teteuoliveira12@gmail.com"
-}

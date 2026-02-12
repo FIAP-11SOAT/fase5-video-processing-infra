@@ -26,6 +26,14 @@ resource "cloudflare_dns_record" "acm_validation" {
   proxied = false
 }
 
+# 10. Aguardar verificação do domínio (local-exec opcional)
+resource "time_sleep" "wait_for_verification" {
+  depends_on = [
+    cloudflare_dns_record.acm_validation,
+  ]
+  create_duration = "60s"
+}
+
 # AWS ACM Certificate for Subdomain <domain_name> with DNS Validation via Cloudflare
 resource "aws_acm_certificate" "front" {
 

@@ -6,6 +6,11 @@ resource "aws_apigatewayv2_domain_name" "gtw" {
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
+
+
+  depends_on = [
+    time_sleep.wait_for_verification
+  ]
 }
 
 resource "aws_apigatewayv2_api_mapping" "gtw_mapping" {
