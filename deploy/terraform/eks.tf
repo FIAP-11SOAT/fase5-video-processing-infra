@@ -11,6 +11,24 @@ resource "aws_eks_cluster" "eks_cluster" {
   depends_on = [module.vpc]
 }
 
+# Habilita prefix delegation na VPC CNI para aumentar o limite de pods por nó
+# t3.medium: sem prefix delegation ~17 pods, com prefix delegation até 110 pods
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name             = aws_eks_cluster.eks_cluster.name
+  addon_name               = "vpc-cni"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  configuration_values = jsonencode({
+    env = {
+      ENABLE_PREFIX_DELEGATION = "true"
+      WARM_PREFIX_TARGET       = "1"
+    }
+  })
+
+  depends_on = [aws_eks_node_group.node_group]
+}
+
 resource "aws_eks_node_group" "node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "${var.project_name}-app-nodes"
@@ -19,11 +37,12 @@ resource "aws_eks_node_group" "node_group" {
 
   scaling_config {
     desired_size = 1
-    max_size     = 2
+    max_size     = 10
     min_size     = 1
   }
 
-  instance_types = ["t3.small"]
+  instance_types = ["t3.medium"]
+
 
   depends_on = [aws_eks_cluster.eks_cluster]
 }
